@@ -231,10 +231,19 @@ with `data-multiple`, `data-numbers`, `data-author` and `data-maximize="off"`.
 
 ## Credits
 
-The lung illustration in `demo.html` (`medien/lungs.png`) comes from Wikimedia
-Commons: <https://commons.wikimedia.org/wiki/File:Birikak.png>. Before
-publishing, add the author and the exact licence from that page here
-(e.g. `by AUTHOR, LICENCE`). The plugin itself contains no third-party material.
+The lung illustration used in the demo (`medien/lungs.png`) is a modified
+version of **“Lungs” by Patrick J. Lynch**, from Wikimedia Commons
+([File:Birikak.png](https://commons.wikimedia.org/wiki/File:Birikak.png)),
+licensed under
+[CC BY-SA 2.5](https://creativecommons.org/licenses/by-sa/2.5/).
+**Changes made:** the original background was removed / whitened so the image
+could serve as an annotation canvas.
+
+Because the licence is ShareAlike, this modified image is released under the
+same licence,
+[CC BY-SA 2.5](https://creativecommons.org/licenses/by-sa/2.5/). This applies
+to the demo image only — the plugin code contains no third-party material and
+stays under the MIT licence.
 
 ## Imprint
 
