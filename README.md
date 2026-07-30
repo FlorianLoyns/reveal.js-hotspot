@@ -146,7 +146,7 @@ Disable it per figure with `data-maximize="off"` or globally with
 
 ## Placing markers
 
-The easiest way is the small **[visual editor](editor/)** shipped in this repo:
+The easiest way is the small **[visual editor](https://florianloyns.github.io/reveal.js-hotspot/editor/)** shipped in this repo:
 load an image, click to place markers, type the name and explanation, and copy the
 finished `<figure class="hotspot">` markup into your slide. It runs entirely in the
 browser — nothing is uploaded.
