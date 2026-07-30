@@ -1,10 +1,10 @@
 <!doctype html>
-<html lang="de">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Hotspot-Editor – reveal.js-hotspot</title>
-<meta name="description" content="Bild laden, Punkte setzen, Name und Erklärung eintippen – fertigen reveal.js-hotspot-Code kopieren. Offline nutzbar, keine externen Aufrufe.">
+<title>Hotspot Editor – reveal.js-hotspot</title>
+<meta name="description" content="Load an image, place markers, type a name and explanation — copy ready-to-use reveal.js-hotspot markup. Runs offline, no external requests.">
 <style>
   :root {
     /* Farbwelt wie die übrigen Loyns-Seiten – ein Akzent: Marine */
@@ -164,7 +164,7 @@
       <h1>Editor</h1>
     </div>
     <a class="back" href="https://florianloyns.github.io/">&larr; florianloyns.github.io</a>
-    <button class="iconbtn" id="themeBtn" title="Hell/Dunkel" aria-label="Hell/Dunkel umschalten">◐</button>
+    <button class="iconbtn" id="themeBtn" title="Light/Dark" aria-label="Toggle light/dark">◐</button>
   </div>
 </header>
 
@@ -174,19 +174,19 @@
 
     <!-- LINKS: Bild + Marker -->
     <section class="panel" aria-labelledby="stage-h">
-      <h2 id="stage-h">Bild &amp; Punkte</h2>
-      <p class="sub">Bild laden, dann auf das Bild tippen, um einen Punkt zu setzen. Punkt ziehen zum Verschieben.</p>
+      <h2 id="stage-h">Image &amp; markers</h2>
+      <p class="sub">Load an image, then tap it to place a marker. Drag a marker to move it.</p>
 
       <div class="toolbar">
-        <button class="btn btn-primary" id="loadBtn">Bild laden</button>
-        <button class="btn btn-ghost sm" id="addBtn" disabled>+ Punkt in der Mitte</button>
-        <button class="btn btn-danger sm" id="clearBtn" disabled>Alle Punkte löschen</button>
+        <button class="btn btn-primary" id="loadBtn">Load image</button>
+        <button class="btn btn-ghost sm" id="addBtn" disabled>+ Marker in the centre</button>
+        <button class="btn btn-danger sm" id="clearBtn" disabled>Clear all markers</button>
         <input type="file" id="file" accept="image/*" hidden>
       </div>
 
       <div id="drop" class="drop">
-        <p style="margin:0 0 6px"><strong>Bild hierher ziehen</strong> oder klicken zum Auswählen</p>
-        <p style="margin:0;font-size:13px">PNG, JPG, SVG &middot; auch aus der Zwischenablage einfügbar &middot; bleibt auf deinem Gerät</p>
+        <p style="margin:0 0 6px"><strong>Drag an image here</strong> or click to choose</p>
+        <p style="margin:0;font-size:13px">PNG, JPG, SVG &middot; paste from clipboard too &middot; stays on your device</p>
       </div>
 
       <div id="stagewrap" class="stagewrap" hidden>
@@ -194,37 +194,37 @@
           <img id="img" alt="">
         </div>
       </div>
-      <p class="hint" id="stageHint" hidden>Ausgewählter Punkt: <kbd>←↑↓→</kbd> verschieben (mit <kbd>Shift</kbd> größer),
-        <kbd>Entf</kbd> löschen, <kbd>Esc</kbd> abwählen.</p>
+      <p class="hint" id="stageHint" hidden>Selected marker: <kbd>←↑↓→</kbd> to move (<kbd>Shift</kbd> for larger steps),
+        <kbd>Del</kbd> to delete, <kbd>Esc</kbd> to deselect.</p>
     </section>
 
     <!-- RECHTS: Editor + Code -->
     <div style="display:flex;flex-direction:column;gap:24px">
 
       <section class="panel" aria-labelledby="edit-h">
-        <h2 id="edit-h">Ausgewählter Punkt</h2>
-        <p class="sub" id="editSub">Noch kein Punkt gesetzt.</p>
+        <h2 id="edit-h">Selected marker</h2>
+        <p class="sub" id="editSub">No marker yet.</p>
 
         <ul class="mlist" id="mlist"></ul>
 
         <div id="editor" hidden>
           <div class="field">
             <label for="fLabel">Name (data-label)</label>
-            <input type="text" id="fLabel" placeholder="z. B. Oberhaut (Epidermis)" autocomplete="off">
+            <input type="text" id="fLabel" placeholder="e.g. Upper lobe" autocomplete="off">
           </div>
           <div class="field">
-            <label for="fText">Erklärung</label>
-            <textarea id="fText" placeholder="Kurzer Erklärungstext, erscheint in der Sprechblase."></textarea>
+            <label for="fText">Explanation</label>
+            <textarea id="fText" placeholder="Short explanation — shown in the bubble."></textarea>
           </div>
           <div class="row">
             <div class="field">
-              <label for="fSide">Öffnet nach</label>
+              <label for="fSide">Opens toward</label>
               <select id="fSide">
-                <option value="auto">automatisch</option>
-                <option value="r">rechts</option>
-                <option value="l">links</option>
-                <option value="u">oben</option>
-                <option value="d">unten</option>
+                <option value="auto">auto</option>
+                <option value="r">right</option>
+                <option value="l">left</option>
+                <option value="u">up</option>
+                <option value="d">down</option>
               </select>
             </div>
             <div class="field">
@@ -236,43 +236,43 @@
       </section>
 
       <section class="panel" aria-labelledby="opt-h">
-        <h2 id="opt-h">Einstellungen</h2>
+        <h2 id="opt-h">Settings</h2>
         <div class="row">
           <div class="field">
-            <label for="oWidth">Bildbreite (data-width)</label>
+            <label for="oWidth">Image width (data-width)</label>
             <input type="text" id="oWidth" value="470px" autocomplete="off">
           </div>
           <div class="field">
-            <label for="oPath">Bildpfad im Vortrag</label>
-            <input type="text" id="oPath" placeholder="medien/bild.png" autocomplete="off">
+            <label for="oPath">Image path in the deck</label>
+            <input type="text" id="oPath" placeholder="media/image.png" autocomplete="off">
           </div>
         </div>
         <div class="field">
-          <label for="oAlt">Alt-Text (Barrierefreiheit)</label>
-          <input type="text" id="oAlt" placeholder="Kurze Bildbeschreibung" autocomplete="off">
+          <label for="oAlt">Alt text (accessibility)</label>
+          <input type="text" id="oAlt" placeholder="Short image description" autocomplete="off">
         </div>
-        <label class="switch"><input type="checkbox" id="oNumbers"> Punkte nummerieren (<code style="font-size:12px">data-numbers</code>)</label>
+        <label class="switch"><input type="checkbox" id="oNumbers"> Number the markers (<code style="font-size:12px">data-numbers</code>)</label>
       </section>
 
       <section class="panel" aria-labelledby="code-h">
-        <h2 id="code-h">Fertiger Code</h2>
-        <p class="sub">In die Folie einfügen – das Plugin <span class="nowrap">reveal.js-hotspot</span> macht den Rest.</p>
+        <h2 id="code-h">Generated code</h2>
+        <p class="sub">Paste into your slide — the <span class="nowrap">reveal.js-hotspot</span> plugin does the rest.</p>
         <div class="codewrap">
-          <pre class="code" id="code" aria-live="polite">&lt;!-- Bild laden und Punkte setzen --&gt;</pre>
+          <pre class="code" id="code" aria-live="polite">&lt;!-- Load an image and place markers --&gt;</pre>
         </div>
         <div class="copybar">
-          <button class="btn btn-primary" id="copyBtn" disabled>Code kopieren</button>
-          <span class="copied" id="copied">kopiert ✓</span>
+          <button class="btn btn-primary" id="copyBtn" disabled>Copy code</button>
+          <span class="copied" id="copied">copied ✓</span>
         </div>
       </section>
 
       <section class="panel" aria-labelledby="how-h">
-        <h2 id="how-h">So geht's</h2>
+        <h2 id="how-h">How it works</h2>
         <ol class="steps">
-          <li>Unbeschriftetes Bild in deinen <code>medien/</code>-Ordner legen.</li>
-          <li>Hier laden, Punkte setzen, Name &amp; Erklärung eintippen.</li>
-          <li><em>Bildpfad</em> auf den echten Dateinamen setzen.</li>
-          <li>Code kopieren, in die Folie einfügen &ndash; Plugin aktiv, fertig.</li>
+          <li>Put an unlabelled image in your <code>media/</code> folder.</li>
+          <li>Load it here, place markers, type name &amp; explanation.</li>
+          <li>Set the <em>image path</em> to the real filename.</li>
+          <li>Copy the code, paste it into your slide &ndash; plugin on, done.</li>
         </ol>
       </section>
 
@@ -283,7 +283,7 @@
 
 <footer>
   <div class="wrap">
-    <span>Editor für das Plugin <a href="https://github.com/florianloyns/reveal.js-hotspot" target="_blank" rel="noopener">reveal.js-hotspot</a></span>
+    <span>Editor for the <a href="https://github.com/florianloyns/reveal.js-hotspot" target="_blank" rel="noopener">reveal.js-hotspot</a> plugin</span>
     <span class="spacer"></span>
     <a href="https://florianloyns.com/Impressum/" target="_blank" rel="noopener">Impressum</a>
   </div>
@@ -311,7 +311,7 @@
     img.onload=function(){
       if(state.objURL) URL.revokeObjectURL(state.objURL);   /* altes Blob freigeben */
       state.objURL=url; state.img=url; state.imgName=file.name;
-      if(!state.path){ state.path='medien/'+file.name; oPath.value=state.path; }
+      if(!state.path){ state.path='media/'+file.name; oPath.value=state.path; }
       drop.hidden=true; stageWrap.hidden=false; stageHint.hidden=false;
       addBtn.disabled=false; clearBtn.disabled=false;
       render();
@@ -363,7 +363,7 @@
   addBtn.addEventListener('click',function(){ addMarker(50,50); });
   clearBtn.addEventListener('click',function(){
     if(!state.markers.length) return;
-    if(!confirm('Alle Punkte entfernen?')) return;
+    if(!confirm('Remove all markers?')) return;
     state.markers=[]; state.sel=-1; render();
   });
   function deleteMarker(i){
@@ -399,7 +399,7 @@
     hp.className='hp'+(i===state.sel?' sel open':'');
     hp.style.left=m.x+'%'; hp.style.top=m.y+'%';
     hp._pop.className='pop at-'+(m.side==='auto'?autoSide(m):m.side);
-    hp._l.textContent=m.label||('Punkt '+(i+1));
+    hp._l.textContent=m.label||('Marker '+(i+1));
     var txt=(m.text||'').trim();
     hp._t.textContent=m.text||''; hp._t.style.display=txt?'block':'none';
   }
@@ -417,8 +417,8 @@
       var li=document.createElement('li'); if(i===state.sel) li.className='sel'; li.dataset.i=i;
       var num=document.createElement('span'); num.className='num'; num.textContent=(i+1);
       var lbl=document.createElement('span'); lbl.className='lbl';
-      if(m.label){ lbl.textContent=m.label; } else { lbl.innerHTML='<span class="empty">ohne Namen</span>'; }
-      var del=document.createElement('button'); del.className='del'; del.title='Löschen'; del.setAttribute('aria-label','Punkt '+(i+1)+' löschen'); del.innerHTML='&times;';
+      if(m.label){ lbl.textContent=m.label; } else { lbl.innerHTML='<span class="empty">no name</span>'; }
+      var del=document.createElement('button'); del.className='del'; del.title='Delete'; del.setAttribute('aria-label','Delete marker '+(i+1)); del.innerHTML='&times;';
       del.addEventListener('click',function(e){ e.stopPropagation(); deleteMarker(i); });
       li.appendChild(num); li.appendChild(lbl); li.appendChild(del);
       li.addEventListener('click',function(){ select(i); });
@@ -427,14 +427,14 @@
   }
   function updateListLabel(i){
     var li=mlist.children[i]; if(!li) return; var lbl=li.querySelector('.lbl');
-    if(state.markers[i].label){ lbl.textContent=state.markers[i].label; } else { lbl.innerHTML='<span class="empty">ohne Namen</span>'; }
+    if(state.markers[i].label){ lbl.textContent=state.markers[i].label; } else { lbl.innerHTML='<span class="empty">no name</span>'; }
   }
 
   function renderEditor(){
     var has=state.sel>=0 && !!state.markers[state.sel];
     editor.hidden=!has;
-    editSub.textContent = has ? ('Punkt '+(state.sel+1)+' von '+state.markers.length+' – Felder ausfüllen.')
-      : (state.markers.length ? 'Punkt in der Liste oder auf dem Bild wählen.' : 'Noch kein Punkt gesetzt.');
+    editSub.textContent = has ? ('Marker '+(state.sel+1)+' of '+state.markers.length+' — fill in the fields.')
+      : (state.markers.length ? 'Select a marker in the list or on the image.' : 'No marker yet.');
     if(has) syncFields();
   }
   function syncFields(){
@@ -473,11 +473,11 @@
   function escText(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
   function buildCode(){
-    if(!state.img) return '<!-- Bild laden und Punkte setzen -->';
-    var w=state.width||'470px', path=state.path||'medien/bild.png';
+    if(!state.img) return '<!-- Load an image and place markers -->';
+    var w=state.width||'470px', path=state.path||'media/image.png';
     var lines=['<figure class="hotspot" data-width="'+escAttr(w)+'"'+(state.numbers?' data-numbers':'')+'>'];
     lines.push('  <img src="'+escAttr(path)+'" alt="'+escAttr(state.alt||'')+'">');
-    if(!state.markers.length) lines.push('  <!-- noch keine Punkte -->');
+    if(!state.markers.length) lines.push('  <!-- no markers yet -->');
     state.markers.forEach(function(m){
       var a='data-x="'+m.x+'" data-y="'+m.y+'"';
       if(m.side && m.side!=='auto') a+=' data-side="'+m.side+'"';
