@@ -1,0 +1,38 @@
+{
+  "name": "reveal.js-hotspot",
+  "version": "1.5.1",
+  "description": "Annotate an image in place: markers on the picture, a tap opens the explanation beside them. Positions are percentages, so nothing is measured at runtime. Built-in multimodal-style full screen keeps the markers working; in ?print-pdf the numbered picture stays on its slide and its full legend prints on a page of its own, so nothing is cut off.",
+  "keywords": [
+    "reveal",
+    "reveal.js",
+    "reveal-plugin",
+    "plugin",
+    "hotspot",
+    "annotation",
+    "image",
+    "labels",
+    "callout",
+    "diagram",
+    "smartboard",
+    "teaching",
+    "training",
+    "presentation"
+  ],
+  "homepage": "https://github.com/florianloyns/reveal.js-hotspot",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/florianloyns/reveal.js-hotspot.git"
+  },
+  "main": "plugin/hotspot/hotspot.js",
+  "module": "plugin/hotspot/hotspot.esm.js",
+  "files": [
+    "plugin",
+    "README.md",
+    "LICENSE"
+  ],
+  "peerDependencies": {
+    "reveal.js": ">=4.2"
+  },
+  "author": "Florian Loyns",
+  "license": "MIT"
+}

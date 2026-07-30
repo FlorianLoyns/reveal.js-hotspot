@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hotspot — Demo</title>
+<link rel="stylesheet" href="vendor/reveal.css">
+<link rel="stylesheet" href="vendor/theme/white.css">
+<style>
+  .reveal .controls { color: #2C4A6E !important; }
+  .reveal .progress { color: #2C4A6E; background: rgba(44,74,110,.15); }
+  .reveal h1, .reveal h2, .reveal h3 { color: #2C4A6E; }
+  .reveal .lead { color: #6B7B7B; font-size: .68em; }
+  .reveal .note { font-size: .35em; color: #999; margin-top: .8em; }
+  .reveal code { background:#EDF1F5; padding:.1em .3em; border-radius:4px; font-size:.85em }
+  .reveal kbd { background:#EDF1F5; padding:.1em .35em; border-radius:4px; font-size:.9em }
+  @media print { footer { display: none } }
+</style>
+</head>
+<body>
+<div class="reveal">
+  <div class="slides">
+
+    <section>
+      <h2>Hotspot</h2>
+      <p class="lead">Annotate an image in place — tap a marker,<br>read the explanation, tap again to close.</p>
+      <p class="note">Positions are percentages of the image, so nothing is measured at runtime.<br>
+      The corner button opens the figure full screen; printing makes a textbook page of it.</p>
+    </section>
+
+    <section>
+      <h3>Tap a marker</h3>
+      <figure class="hotspot" data-width="470px">
+        <img src="medien/lungs.png" alt="Human lungs with trachea and bronchial tree">
+
+        <span data-x="50" data-y="15" data-side="r" data-label="Trachea">
+          Held open by cartilage rings, about 10&ndash;12&nbsp;cm long. It divides at the level of the
+          fourth thoracic vertebra.
+        </span>
+
+        <span data-x="50" data-y="43" data-label="Main bronchi">
+          The right main bronchus leaves at a steeper angle and is the wider one. That is why
+          aspirated material usually ends up in the right lung.
+        </span>
+
+        <span data-x="24" data-y="30" data-label="Bronchial tree">
+          Around 23 generations of branching down to the alveoli. Every division enlarges the
+          total cross-section, so the flow slows down.
+        </span>
+
+        <span data-x="30" data-y="64" data-label="Horizontal fissure">
+          Only the right lung has one. Together with the oblique fissure it separates three
+          lobes &mdash; the left lung has two.
+        </span>
+
+        <span data-x="55" data-y="62" data-side="r" data-label="Cardiac notch">
+          Here the left lung steps aside for the heart. It is the reason the left lung is the
+          smaller of the two.
+        </span>
+
+        <span data-x="63" data-y="74" data-side="d" data-label="Oblique fissure">
+          Runs from the back downwards to the front. Auscultating from behind, you are mostly
+          listening to the lower lobe.
+        </span>
+
+        <span data-x="78" data-y="89" data-side="u" data-label="Lung base">
+          Rests on the diaphragm and moves with every breath. Lying flat, the lower parts
+          ventilate poorly &mdash; the reason for repositioning.
+        </span>
+      </figure>
+      <p class="note">One bubble at a time; tapping the picture or pressing <kbd>Esc</kbd> closes it.
+      The corner button shows the figure <b>full screen</b> &mdash; the markers keep working there.</p>
+      <aside class="notes">Seven markers on one illustration. The bubble opens toward the free side,
+      computed from the percentages — data-side overrides it where two bubbles would collide.</aside>
+    </section>
+
+    <section>
+      <h3>Numbered, revealed step by step</h3>
+      <figure class="hotspot" data-width="470px" data-numbers>
+        <img src="medien/lungs.png" alt="Human lungs, markers appearing one by one">
+        <span class="fragment" data-x="50" data-y="15" data-side="r" data-label="Trachea">Cartilage rings, 10&ndash;12&nbsp;cm.</span>
+        <span class="fragment" data-x="50" data-y="43" data-label="Main bronchi">The right one is steeper and wider.</span>
+        <span class="fragment" data-x="24" data-y="30" data-label="Bronchial tree">23 generations of branching.</span>
+        <span class="fragment" data-x="30" data-y="64" data-label="Horizontal fissure">Right lung only.</span>
+        <span class="fragment" data-x="55" data-y="62" data-side="r" data-label="Cardiac notch">Room for the heart.</span>
+        <span class="fragment" data-x="63" data-y="74" data-side="d" data-label="Oblique fissure">Back to front.</span>
+        <span class="fragment" data-x="78" data-y="89" data-side="u" data-label="Lung base">On the diaphragm.</span>
+      </figure>
+      <p class="note"><code>data-numbers</code> numbers the markers &mdash; &ldquo;look at number three&rdquo;.
+      <code>class="fragment"</code> makes each one a native reveal fragment: remote, speaker view
+      and URL keep working.</p>
+    </section>
+
+    <section>
+      <h3>Printed, it stays readable</h3>
+      <p class="lead" style="font-size:.5em"><a href="?print-pdf" target="_blank" rel="noopener"
+        style="color:#2C4A6E">Open this deck with <code>?print-pdf</code></a> and use your browser's print.</p>
+      <p class="note" style="font-size:.42em">The image prints on the slide as usual; its numbered legend
+      &mdash; every label and text &mdash; goes onto a <b>page of its own</b>, so it never clashes with other
+      content beside the picture. Bubbles and buttons are hidden.</p>
+    </section>
+
+  </div>
+</div>
+
+<!-- Vor dem Veröffentlichen: Dateiname, Urheber und Lizenz der Wikimedia-Abbildung
+     hier und in der README eintragen. -->
+<footer style="position:fixed;left:0;right:0;bottom:6px;text-align:center;font-size:12px;font-family:system-ui,-apple-system,sans-serif;z-index:40;pointer-events:none;">
+  <a href="https://commons.wikimedia.org/wiki/File:Birikak.png" target="_blank" rel="noopener"
+     style="color:#8a99a8;text-decoration:none;pointer-events:auto;">Illustration: Wikimedia Commons</a>
+  <span style="color:#c7d0d8;">&nbsp;&middot;&nbsp;</span>
+  <a href="https://florianloyns.com/Impressum/" target="_blank" rel="noopener"
+     style="color:#8a99a8;text-decoration:none;pointer-events:auto;">Impressum</a>
+</footer>
+
+<script src="vendor/reveal.js"></script>
+<script src="plugin/hotspot/hotspot.js?v=1.5.1"></script>
+<script>
+  Reveal.initialize({
+    hash: true,
+    pdfSeparateFragments: false,   // im Druck: eine Seite pro Folie, nicht pro Fragment
+    plugins: [ RevealHotspot ]
+  });
+</script>
+</body>
+</html>
