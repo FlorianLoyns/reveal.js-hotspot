@@ -7,12 +7,12 @@
 <meta name="description" content="Load an image, place markers, type a name and explanation — copy ready-to-use reveal.js-hotspot markup. Runs offline, no external requests.">
 <style>
   :root {
-    /* Farbwelt wie die übrigen Loyns-Seiten – ein Akzent: Marine */
+    /* Same palette as the other Loyns pages — one accent: marine */
     --marine:#2C4A6E; --marine-dark:#1e3a57; --marine-soft:#e8eef5;
     --ink:#1e293b; --body:#334155; --muted:#6b7280;
     --bg:#ffffff; --surface:#ffffff; --border:#cbd5e1;
     --radius:12px;
-    /* Hotspot-Optik (wie Plugin v1.5.1) – bleibt Marine wie im echten Plugin */
+    /* Hotspot look (like plugin v1.5.1) — stays marine like the real plugin */
     --hs-accent:#2c4a6e; --hs-active:#203a58; --hs-line:#e7ebef;
     --hs-strong:#0b1818; --hs-text:#22312f;
   }
@@ -85,7 +85,7 @@
   .hint kbd{background:var(--marine-soft);color:var(--marine-dark);border-radius:5px;padding:1px 6px;font-size:12px;
     font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
 
-  /* Hotspot marker + bubble (Optik wie Plugin v1.5.1) */
+  /* Hotspot marker + bubble (look like plugin v1.5.1) */
   .hp{position:absolute;width:48px;height:48px;transform:translate(-50%,-50%);display:flex;align-items:center;
     justify-content:center;z-index:2;cursor:grab;touch-action:none}
   .hp:active{cursor:grabbing}
@@ -172,7 +172,7 @@
 <div class="wrap">
   <div class="cols">
 
-    <!-- LINKS: Bild + Marker -->
+    <!-- LEFT: image + markers -->
     <section class="panel" aria-labelledby="stage-h">
       <h2 id="stage-h">Image &amp; markers</h2>
       <p class="sub">Load an image, then tap it to place a marker. Drag a marker to move it.</p>
@@ -198,7 +198,7 @@
         <kbd>Del</kbd> to delete, <kbd>Esc</kbd> to deselect.</p>
     </section>
 
-    <!-- RECHTS: Editor + Code -->
+    <!-- RIGHT: editor + code -->
     <div style="display:flex;flex-direction:column;gap:24px">
 
       <section class="panel" aria-labelledby="edit-h">
@@ -302,14 +302,14 @@
   var oWidth=$('#oWidth'), oPath=$('#oPath'), oAlt=$('#oAlt'), oNumbers=$('#oNumbers');
   var codeEl=$('#code'), copyBtn=$('#copyBtn'), copied=$('#copied');
   var addBtn=$('#addBtn'), clearBtn=$('#clearBtn');
-  var mEls=[];   /* Referenzen auf die Marker-DOM-Knoten – für flimmerfreie In-Place-Updates */
+  var mEls=[];   /* references to the marker DOM nodes — for flicker-free in-place updates */
 
-  /* ---------- Bild laden ---------- */
+  /* ---------- Load image ---------- */
   function openImage(file){
     if(!file || !/^image\//.test(file.type)) return;
     var url=URL.createObjectURL(file);
     img.onload=function(){
-      if(state.objURL) URL.revokeObjectURL(state.objURL);   /* altes Blob freigeben */
+      if(state.objURL) URL.revokeObjectURL(state.objURL);   /* release the old blob */
       state.objURL=url; state.img=url; state.imgName=file.name;
       if(!state.path){ state.path='media/'+file.name; oPath.value=state.path; }
       drop.hidden=true; stageWrap.hidden=false; stageHint.hidden=false;
@@ -324,13 +324,13 @@
   ['dragenter','dragover'].forEach(function(ev){drop.addEventListener(ev,function(e){e.preventDefault();drop.classList.add('drag')})});
   ['dragleave','drop'].forEach(function(ev){drop.addEventListener(ev,function(e){e.preventDefault();drop.classList.remove('drag')})});
   drop.addEventListener('drop',function(e){ var f=e.dataTransfer.files[0]; if(f) openImage(f); });
-  /* Bild aus der Zwischenablage (Strg/Cmd+V) */
+  /* image from the clipboard (Ctrl/Cmd+V) */
   window.addEventListener('paste',function(e){
     var items=(e.clipboardData||{}).items||[];
     for(var i=0;i<items.length;i++){ if(items[i].type&&items[i].type.indexOf('image')===0){ var f=items[i].getAsFile(); if(f){ openImage(f); e.preventDefault(); } return; } }
   });
 
-  /* ---------- Marker setzen / ziehen ---------- */
+  /* ---------- Place / drag markers ---------- */
   var dragging=null;
   stage.addEventListener('pointerdown',function(e){
     if(!state.img) return;
@@ -345,7 +345,7 @@
   stage.addEventListener('pointerup',function(){ dragging=null; });
   stage.addEventListener('click',function(e){
     if(!state.img) return;
-    if(e.target.closest('.hp')) return;   /* Marker-Klick wird oben behandelt; Blase ist pointer-events:none */
+    if(e.target.closest('.hp')) return;   /* marker clicks handled above; the bubble is pointer-events:none */
     var p=posFromEvent(e); addMarker(p.x,p.y);
   });
 
@@ -373,14 +373,14 @@
   }
   function select(i){ state.sel=i; render(); }
 
-  /* ---------- Auto-Seite (freiester Rand) ---------- */
+  /* ---------- Auto side (freest edge) ---------- */
   function autoSide(m){
     var space={r:100-m.x,l:m.x,d:100-m.y,u:m.y}, best='r', bv=-1;
     ['r','l','d','u'].forEach(function(k){ if(space[k]>bv){bv=space[k];best=k;} });
     return best;
   }
 
-  /* ---------- Rendern ---------- */
+  /* ---------- Render ---------- */
   function render(){ renderMarkers(); renderList(); renderEditor(); updateCode(); }
 
   function buildMarkerEl(i){
@@ -450,7 +450,7 @@
   oAlt.addEventListener('input',function(){ state.alt=oAlt.value; updateCode(); });
   oNumbers.addEventListener('change',function(){ state.numbers=oNumbers.checked; updateCode(); });
 
-  /* ---------- Tastatur: verschieben / löschen / abwählen ---------- */
+  /* ---------- Keyboard: move / delete / deselect ---------- */
   function typingInField(){ var a=document.activeElement; return a && /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName); }
   window.addEventListener('keydown',function(e){
     if(state.sel<0 || !state.markers[state.sel]) return;
@@ -468,7 +468,7 @@
     if(moved){ e.preventDefault(); updateMarkerEl(state.sel); syncFields(); updateCode(); }
   });
 
-  /* ---------- Code erzeugen ---------- */
+  /* ---------- Build the code ---------- */
   function escAttr(s){ return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
   function escText(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
