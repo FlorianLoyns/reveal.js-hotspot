@@ -146,7 +146,12 @@ Disable it per figure with `data-maximize="off"` or globally with
 
 ## Placing markers
 
-Typing percentages by hand is tedious. Turn on the author mode and the plugin
+The easiest way is the small **[visual editor](editor/)** shipped in this repo:
+load an image, click to place markers, type the name and explanation, and copy the
+finished `<figure class="hotspot">` markup into your slide. It runs entirely in the
+browser — nothing is uploaded.
+
+Prefer to stay inside the deck? Turn on the author mode and the plugin
 hands you the finished markup:
 
 ```js

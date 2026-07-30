@@ -1,0 +1,513 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hotspot-Editor – reveal.js-hotspot</title>
+<meta name="description" content="Bild laden, Punkte setzen, Name und Erklärung eintippen – fertigen reveal.js-hotspot-Code kopieren. Offline nutzbar, keine externen Aufrufe.">
+<style>
+  :root {
+    /* Farbwelt wie die übrigen Loyns-Seiten – ein Akzent: Marine */
+    --marine:#2C4A6E; --marine-dark:#1e3a57; --marine-soft:#e8eef5;
+    --ink:#1e293b; --body:#334155; --muted:#6b7280;
+    --bg:#ffffff; --surface:#ffffff; --border:#cbd5e1;
+    --radius:12px;
+    /* Hotspot-Optik (wie Plugin v1.5.1) – bleibt Marine wie im echten Plugin */
+    --hs-accent:#2c4a6e; --hs-active:#203a58; --hs-line:#e7ebef;
+    --hs-strong:#0b1818; --hs-text:#22312f;
+  }
+  @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+    --marine:#7dd3fc; --marine-dark:#38bdf8; --marine-soft:rgba(125,211,252,.12);
+    --ink:#f1f5f9; --body:#cbd5e1; --muted:#94a3b8;
+    --bg:#0f172a; --surface:#1e293b; --border:#334155;
+  }}
+  [data-theme="dark"]{
+    --marine:#7dd3fc; --marine-dark:#38bdf8; --marine-soft:rgba(125,211,252,.12);
+    --ink:#f1f5f9; --body:#cbd5e1; --muted:#94a3b8;
+    --bg:#0f172a; --surface:#1e293b; --border:#334155;
+  }
+  *,*::before,*::after{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    background:var(--bg);color:var(--body);line-height:1.6;font-size:16px;-webkit-font-smoothing:antialiased;
+    -webkit-tap-highlight-color:transparent;touch-action:manipulation}
+  a{color:inherit}
+  :focus-visible{outline:3px solid var(--marine);outline-offset:2px;border-radius:4px}
+  .wrap{max-width:1240px;margin:0 auto;padding:0 24px}
+
+  /* Header */
+  header.top{border-bottom:1px solid var(--border);background:var(--surface)}
+  header.top .wrap{display:flex;align-items:center;gap:16px;padding:16px 24px;flex-wrap:wrap}
+  .brand{display:flex;flex-direction:column;line-height:1.1;margin-right:auto}
+  .brand .eyebrow{color:var(--marine);font-weight:700;font-size:12px;letter-spacing:1.5px}
+  .brand h1{margin:2px 0 0;color:var(--ink);font-size:21px;font-weight:800;letter-spacing:-.01em}
+  .top a.back{font-size:14px;color:var(--muted);text-decoration:none}
+  .top a.back:hover{color:var(--marine)}
+  .iconbtn{border:1px solid var(--border);background:var(--surface);color:var(--body);border-radius:9px;
+    width:38px;height:38px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer}
+  .iconbtn:hover{border-color:var(--marine);color:var(--marine)}
+
+  /* Buttons */
+  .btn{display:inline-flex;align-items:center;gap:8px;padding:11px 18px;border-radius:10px;font-weight:600;
+    font-size:15px;text-decoration:none;border:1px solid transparent;cursor:pointer;
+    transition:background .15s,transform .15s,gap .15s,border-color .15s;font-family:inherit}
+  .btn-primary{background:var(--marine);color:#fff}
+  .btn-primary:hover{background:var(--marine-dark);gap:11px}
+  .btn-ghost{background:transparent;color:var(--marine);border-color:var(--border)}
+  .btn-ghost:hover{border-color:var(--marine)}
+  .btn-danger{background:transparent;color:#b3261e;border-color:#e6bcb9}
+  .btn-danger:hover{background:#b3261e;color:#fff}
+  .btn:disabled{opacity:.45;cursor:not-allowed}
+  .btn.sm{padding:7px 12px;font-size:13.5px;border-radius:8px}
+
+  /* Layout */
+  main{padding:22px 0 60px}
+  .cols{display:grid;grid-template-columns:1fr 400px;gap:24px;align-items:start}
+  @media (max-width:960px){ .cols{grid-template-columns:1fr} }
+  .panel{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px}
+  .panel h2{margin:0 0 4px;font-size:16px;font-weight:800;color:var(--ink);display:flex;align-items:center;gap:9px}
+  .panel h2::before{content:"";width:11px;height:11px;border-radius:3px;background:var(--marine)}
+  .panel .sub{margin:0 0 14px;color:var(--muted);font-size:13.5px}
+
+  /* Stage / image */
+  .toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:14px}
+  .drop{border:2px dashed var(--border);border-radius:12px;padding:44px 20px;text-align:center;color:var(--muted);
+    background:var(--surface);cursor:pointer;transition:border-color .15s,background .15s}
+  .drop:hover,.drop.drag{border-color:var(--marine);background:var(--marine-soft)}
+  .drop strong{color:var(--ink)}
+  .stage{position:relative;display:inline-block;line-height:0;border-radius:12px;overflow:visible;
+    box-shadow:0 1px 0 var(--border)}
+  .stagewrap{background:var(--marine-soft);border:1px solid var(--border);border-radius:12px;padding:18px;
+    display:flex;justify-content:center;overflow:auto}
+  .stage img{display:block;max-width:100%;height:auto;border-radius:12px;user-select:none;-webkit-user-drag:none}
+  .stage.crosshair{cursor:crosshair}
+  .hint{color:var(--muted);font-size:13px;margin-top:10px;text-align:center}
+  .hint kbd{background:var(--marine-soft);color:var(--marine-dark);border-radius:5px;padding:1px 6px;font-size:12px;
+    font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+
+  /* Hotspot marker + bubble (Optik wie Plugin v1.5.1) */
+  .hp{position:absolute;width:48px;height:48px;transform:translate(-50%,-50%);display:flex;align-items:center;
+    justify-content:center;z-index:2;cursor:grab;touch-action:none}
+  .hp:active{cursor:grabbing}
+  .hp.sel{z-index:6}
+  .hp .dot{width:26px;height:26px;border-radius:50%;background:var(--hs-accent);
+    box-shadow:0 0 0 4px #fff,0 1px 6px rgba(0,0,0,.32);display:flex;align-items:center;justify-content:center;
+    color:#fff;font-size:14px;font-weight:800;line-height:1;transition:transform .16s,background .16s}
+  .hp.sel .dot{background:var(--hs-active);transform:scale(1.16);box-shadow:0 0 0 4px #fff,0 0 0 7px var(--hs-accent)}
+  .hp .pop{position:absolute;width:300px;max-width:60vw;background:#fff;border:1px solid var(--hs-line);
+    border-radius:12px;padding:12px 15px;box-shadow:0 14px 32px -12px rgba(0,0,0,.3);text-align:left;line-height:1.5;
+    opacity:0;visibility:hidden;pointer-events:none;transition:opacity .16s,visibility .16s;z-index:7}
+  .hp.open .pop{opacity:1;visibility:visible}
+  .hp .pop .l{display:block;font-size:17px;font-weight:700;line-height:1.3;color:var(--hs-strong)}
+  .hp .pop .t{display:block;font-size:15px;color:var(--hs-text);margin-top:4px;white-space:pre-wrap}
+  .hp .pop::after{content:"";position:absolute;width:10px;height:10px;background:#fff;border:1px solid var(--hs-line);transform:rotate(45deg)}
+  .hp .pop.at-r{left:44px;top:50%;transform:translateY(-50%)}
+  .hp .pop.at-r::after{left:-6px;top:50%;margin-top:-5px;border-right:0;border-top:0}
+  .hp .pop.at-l{right:44px;top:50%;transform:translateY(-50%)}
+  .hp .pop.at-l::after{right:-6px;top:50%;margin-top:-5px;border-left:0;border-bottom:0}
+  .hp .pop.at-d{top:44px;left:50%;transform:translateX(-50%)}
+  .hp .pop.at-d::after{top:-6px;left:50%;margin-left:-5px;border-right:0;border-bottom:0}
+  .hp .pop.at-u{bottom:44px;left:50%;transform:translateX(-50%)}
+  .hp .pop.at-u::after{bottom:-6px;left:50%;margin-left:-5px;border-left:0;border-top:0}
+
+  /* Fields */
+  .field{margin-bottom:14px}
+  .field label{display:block;font-size:12.5px;font-weight:700;color:var(--ink);text-transform:uppercase;
+    letter-spacing:.6px;margin-bottom:6px}
+  .field input[type=text],.field textarea,.field select{width:100%;font-family:inherit;font-size:15px;color:var(--body);
+    background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 12px}
+  .field textarea{min-height:88px;resize:vertical;line-height:1.5}
+  .field input:focus,.field textarea:focus,.field select:focus{outline:none;border-color:var(--marine);
+    box-shadow:0 0 0 3px var(--marine-soft)}
+  .row{display:flex;gap:10px}
+  .row .field{flex:1}
+  .switch{display:flex;align-items:center;gap:10px;font-size:14px;color:var(--body)}
+  .switch input{width:18px;height:18px;accent-color:var(--marine)}
+
+  /* Marker list */
+  .mlist{list-style:none;margin:0 0 14px;padding:0;display:flex;flex-direction:column;gap:8px;max-height:240px;overflow:auto}
+  .mlist li{display:flex;align-items:center;gap:10px;border:1px solid var(--border);border-radius:10px;
+    padding:8px 10px;cursor:pointer;background:var(--surface)}
+  .mlist li.sel{border-color:var(--marine);background:var(--marine-soft)}
+  .mlist .num{flex:0 0 auto;width:24px;height:24px;border-radius:50%;background:var(--marine);color:#fff;
+    font-size:12.5px;font-weight:800;display:flex;align-items:center;justify-content:center}
+  .mlist .lbl{flex:1;min-width:0;font-size:14px;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .mlist .lbl .empty{color:var(--muted);font-style:italic}
+  .mlist .del{flex:0 0 auto;border:0;background:none;color:var(--muted);cursor:pointer;font-size:18px;line-height:1;padding:2px 6px;border-radius:6px}
+  .mlist .del:hover{color:#b3261e;background:#fbeceb}
+
+  /* Code output */
+  .codewrap{position:relative}
+  pre.code{margin:0;background:#0f172a;color:#e5eef7;border-radius:12px;padding:16px 16px;overflow:auto;
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12.5px;line-height:1.55;max-height:320px}
+  .copybar{display:flex;gap:10px;align-items:center;margin-top:12px}
+  .copied{color:var(--marine);font-weight:700;font-size:14px;opacity:0;transition:opacity .2s}
+  .copied.show{opacity:1}
+
+  .steps{margin:0;padding-left:20px;color:var(--body);font-size:14px;line-height:1.7}
+  .steps li{padding:1px 0}
+  .steps code{background:var(--marine-soft);color:var(--marine-dark);padding:1px 6px;border-radius:5px;font-size:12.5px}
+
+  footer{border-top:1px solid var(--border);margin-top:40px;padding:22px 0;color:var(--muted);font-size:13.5px}
+  footer .wrap{display:flex;gap:18px;flex-wrap:wrap;align-items:center}
+  footer a{color:var(--muted);text-decoration:none}
+  footer a:hover{color:var(--marine)}
+  .spacer{flex:1}
+  .nowrap{white-space:nowrap}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <div class="brand">
+      <span class="eyebrow">reveal.js-hotspot</span>
+      <h1>Editor</h1>
+    </div>
+    <a class="back" href="https://florianloyns.github.io/">&larr; florianloyns.github.io</a>
+    <button class="iconbtn" id="themeBtn" title="Hell/Dunkel" aria-label="Hell/Dunkel umschalten">◐</button>
+  </div>
+</header>
+
+<main>
+<div class="wrap">
+  <div class="cols">
+
+    <!-- LINKS: Bild + Marker -->
+    <section class="panel" aria-labelledby="stage-h">
+      <h2 id="stage-h">Bild &amp; Punkte</h2>
+      <p class="sub">Bild laden, dann auf das Bild tippen, um einen Punkt zu setzen. Punkt ziehen zum Verschieben.</p>
+
+      <div class="toolbar">
+        <button class="btn btn-primary" id="loadBtn">Bild laden</button>
+        <button class="btn btn-ghost sm" id="addBtn" disabled>+ Punkt in der Mitte</button>
+        <button class="btn btn-danger sm" id="clearBtn" disabled>Alle Punkte löschen</button>
+        <input type="file" id="file" accept="image/*" hidden>
+      </div>
+
+      <div id="drop" class="drop">
+        <p style="margin:0 0 6px"><strong>Bild hierher ziehen</strong> oder klicken zum Auswählen</p>
+        <p style="margin:0;font-size:13px">PNG, JPG, SVG &middot; auch aus der Zwischenablage einfügbar &middot; bleibt auf deinem Gerät</p>
+      </div>
+
+      <div id="stagewrap" class="stagewrap" hidden>
+        <div id="stage" class="stage crosshair">
+          <img id="img" alt="">
+        </div>
+      </div>
+      <p class="hint" id="stageHint" hidden>Ausgewählter Punkt: <kbd>←↑↓→</kbd> verschieben (mit <kbd>Shift</kbd> größer),
+        <kbd>Entf</kbd> löschen, <kbd>Esc</kbd> abwählen.</p>
+    </section>
+
+    <!-- RECHTS: Editor + Code -->
+    <div style="display:flex;flex-direction:column;gap:24px">
+
+      <section class="panel" aria-labelledby="edit-h">
+        <h2 id="edit-h">Ausgewählter Punkt</h2>
+        <p class="sub" id="editSub">Noch kein Punkt gesetzt.</p>
+
+        <ul class="mlist" id="mlist"></ul>
+
+        <div id="editor" hidden>
+          <div class="field">
+            <label for="fLabel">Name (data-label)</label>
+            <input type="text" id="fLabel" placeholder="z. B. Oberhaut (Epidermis)" autocomplete="off">
+          </div>
+          <div class="field">
+            <label for="fText">Erklärung</label>
+            <textarea id="fText" placeholder="Kurzer Erklärungstext, erscheint in der Sprechblase."></textarea>
+          </div>
+          <div class="row">
+            <div class="field">
+              <label for="fSide">Öffnet nach</label>
+              <select id="fSide">
+                <option value="auto">automatisch</option>
+                <option value="r">rechts</option>
+                <option value="l">links</option>
+                <option value="u">oben</option>
+                <option value="d">unten</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="fPos">Position</label>
+              <input type="text" id="fPos" readonly>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" aria-labelledby="opt-h">
+        <h2 id="opt-h">Einstellungen</h2>
+        <div class="row">
+          <div class="field">
+            <label for="oWidth">Bildbreite (data-width)</label>
+            <input type="text" id="oWidth" value="470px" autocomplete="off">
+          </div>
+          <div class="field">
+            <label for="oPath">Bildpfad im Vortrag</label>
+            <input type="text" id="oPath" placeholder="medien/bild.png" autocomplete="off">
+          </div>
+        </div>
+        <div class="field">
+          <label for="oAlt">Alt-Text (Barrierefreiheit)</label>
+          <input type="text" id="oAlt" placeholder="Kurze Bildbeschreibung" autocomplete="off">
+        </div>
+        <label class="switch"><input type="checkbox" id="oNumbers"> Punkte nummerieren (<code style="font-size:12px">data-numbers</code>)</label>
+      </section>
+
+      <section class="panel" aria-labelledby="code-h">
+        <h2 id="code-h">Fertiger Code</h2>
+        <p class="sub">In die Folie einfügen – das Plugin <span class="nowrap">reveal.js-hotspot</span> macht den Rest.</p>
+        <div class="codewrap">
+          <pre class="code" id="code" aria-live="polite">&lt;!-- Bild laden und Punkte setzen --&gt;</pre>
+        </div>
+        <div class="copybar">
+          <button class="btn btn-primary" id="copyBtn" disabled>Code kopieren</button>
+          <span class="copied" id="copied">kopiert ✓</span>
+        </div>
+      </section>
+
+      <section class="panel" aria-labelledby="how-h">
+        <h2 id="how-h">So geht's</h2>
+        <ol class="steps">
+          <li>Unbeschriftetes Bild in deinen <code>medien/</code>-Ordner legen.</li>
+          <li>Hier laden, Punkte setzen, Name &amp; Erklärung eintippen.</li>
+          <li><em>Bildpfad</em> auf den echten Dateinamen setzen.</li>
+          <li>Code kopieren, in die Folie einfügen &ndash; Plugin aktiv, fertig.</li>
+        </ol>
+      </section>
+
+    </div>
+  </div>
+</div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>Editor für das Plugin <a href="https://github.com/florianloyns/reveal.js-hotspot" target="_blank" rel="noopener">reveal.js-hotspot</a></span>
+    <span class="spacer"></span>
+    <a href="https://florianloyns.com/Impressum/" target="_blank" rel="noopener">Impressum</a>
+  </div>
+</footer>
+
+<script>
+(function(){
+  "use strict";
+  var $=function(s){return document.querySelector(s)};
+  var state={ img:null, objURL:null, imgName:'', path:'', alt:'', width:'470px', numbers:false, markers:[], sel:-1 };
+
+  var stage=$('#stage'), stageWrap=$('#stagewrap'), img=$('#img'), drop=$('#drop');
+  var fileInput=$('#file'), stageHint=$('#stageHint');
+  var mlist=$('#mlist'), editor=$('#editor'), editSub=$('#editSub');
+  var fLabel=$('#fLabel'), fText=$('#fText'), fSide=$('#fSide'), fPos=$('#fPos');
+  var oWidth=$('#oWidth'), oPath=$('#oPath'), oAlt=$('#oAlt'), oNumbers=$('#oNumbers');
+  var codeEl=$('#code'), copyBtn=$('#copyBtn'), copied=$('#copied');
+  var addBtn=$('#addBtn'), clearBtn=$('#clearBtn');
+  var mEls=[];   /* Referenzen auf die Marker-DOM-Knoten – für flimmerfreie In-Place-Updates */
+
+  /* ---------- Bild laden ---------- */
+  function openImage(file){
+    if(!file || !/^image\//.test(file.type)) return;
+    var url=URL.createObjectURL(file);
+    img.onload=function(){
+      if(state.objURL) URL.revokeObjectURL(state.objURL);   /* altes Blob freigeben */
+      state.objURL=url; state.img=url; state.imgName=file.name;
+      if(!state.path){ state.path='medien/'+file.name; oPath.value=state.path; }
+      drop.hidden=true; stageWrap.hidden=false; stageHint.hidden=false;
+      addBtn.disabled=false; clearBtn.disabled=false;
+      render();
+    };
+    img.src=url;
+  }
+  $('#loadBtn').addEventListener('click',function(){fileInput.click()});
+  drop.addEventListener('click',function(){fileInput.click()});
+  fileInput.addEventListener('change',function(e){ if(e.target.files[0]) openImage(e.target.files[0]); fileInput.value=''; });
+  ['dragenter','dragover'].forEach(function(ev){drop.addEventListener(ev,function(e){e.preventDefault();drop.classList.add('drag')})});
+  ['dragleave','drop'].forEach(function(ev){drop.addEventListener(ev,function(e){e.preventDefault();drop.classList.remove('drag')})});
+  drop.addEventListener('drop',function(e){ var f=e.dataTransfer.files[0]; if(f) openImage(f); });
+  /* Bild aus der Zwischenablage (Strg/Cmd+V) */
+  window.addEventListener('paste',function(e){
+    var items=(e.clipboardData||{}).items||[];
+    for(var i=0;i<items.length;i++){ if(items[i].type&&items[i].type.indexOf('image')===0){ var f=items[i].getAsFile(); if(f){ openImage(f); e.preventDefault(); } return; } }
+  });
+
+  /* ---------- Marker setzen / ziehen ---------- */
+  var dragging=null;
+  stage.addEventListener('pointerdown',function(e){
+    if(!state.img) return;
+    var hp=e.target.closest('.hp');
+    if(hp){ var i=+hp.dataset.i; if(i!==state.sel) select(i); dragging=i; hp.setPointerCapture(e.pointerId); e.preventDefault(); }
+  });
+  stage.addEventListener('pointermove',function(e){
+    if(dragging===null) return;
+    var p=posFromEvent(e); var m=state.markers[dragging]; m.x=p.x; m.y=p.y;
+    updateMarkerEl(dragging); syncFields(); updateCode();
+  });
+  stage.addEventListener('pointerup',function(){ dragging=null; });
+  stage.addEventListener('click',function(e){
+    if(!state.img) return;
+    if(e.target.closest('.hp')) return;   /* Marker-Klick wird oben behandelt; Blase ist pointer-events:none */
+    var p=posFromEvent(e); addMarker(p.x,p.y);
+  });
+
+  function posFromEvent(e){
+    var r=img.getBoundingClientRect();
+    return { x:clamp((e.clientX-r.left)/r.width*100), y:clamp((e.clientY-r.top)/r.height*100) };
+  }
+  function clamp(v){ return Math.max(0,Math.min(100,Math.round(v*10)/10)); }
+
+  function addMarker(x,y){
+    state.markers.push({x:x,y:y,side:'auto',label:'',text:''});
+    state.sel=state.markers.length-1;
+    render(); fLabel.focus();
+  }
+  addBtn.addEventListener('click',function(){ addMarker(50,50); });
+  clearBtn.addEventListener('click',function(){
+    if(!state.markers.length) return;
+    if(!confirm('Alle Punkte entfernen?')) return;
+    state.markers=[]; state.sel=-1; render();
+  });
+  function deleteMarker(i){
+    state.markers.splice(i,1);
+    if(state.sel>=state.markers.length) state.sel=state.markers.length-1;
+    render();
+  }
+  function select(i){ state.sel=i; render(); }
+
+  /* ---------- Auto-Seite (freiester Rand) ---------- */
+  function autoSide(m){
+    var space={r:100-m.x,l:m.x,d:100-m.y,u:m.y}, best='r', bv=-1;
+    ['r','l','d','u'].forEach(function(k){ if(space[k]>bv){bv=space[k];best=k;} });
+    return best;
+  }
+
+  /* ---------- Rendern ---------- */
+  function render(){ renderMarkers(); renderList(); renderEditor(); updateCode(); }
+
+  function buildMarkerEl(i){
+    var m=state.markers[i];
+    var hp=document.createElement('div'); hp.dataset.i=i;
+    var dot=document.createElement('div'); dot.className='dot'; dot.textContent=(i+1); hp.appendChild(dot);
+    var pop=document.createElement('div');
+    var l=document.createElement('span'); l.className='l'; pop.appendChild(l);
+    var t=document.createElement('span'); t.className='t'; pop.appendChild(t);
+    hp.appendChild(pop); hp._l=l; hp._t=t; hp._pop=pop;
+    applyMarkerEl(hp,i);
+    return hp;
+  }
+  function applyMarkerEl(hp,i){
+    var m=state.markers[i];
+    hp.className='hp'+(i===state.sel?' sel open':'');
+    hp.style.left=m.x+'%'; hp.style.top=m.y+'%';
+    hp._pop.className='pop at-'+(m.side==='auto'?autoSide(m):m.side);
+    hp._l.textContent=m.label||('Punkt '+(i+1));
+    var txt=(m.text||'').trim();
+    hp._t.textContent=m.text||''; hp._t.style.display=txt?'block':'none';
+  }
+  function updateMarkerEl(i){ if(mEls[i]) applyMarkerEl(mEls[i],i); }
+
+  function renderMarkers(){
+    mEls.forEach(function(n){ if(n&&n.parentNode) n.parentNode.removeChild(n); });
+    mEls=[];
+    state.markers.forEach(function(m,i){ var hp=buildMarkerEl(i); mEls[i]=hp; stage.appendChild(hp); });
+  }
+
+  function renderList(){
+    mlist.innerHTML='';
+    state.markers.forEach(function(m,i){
+      var li=document.createElement('li'); if(i===state.sel) li.className='sel'; li.dataset.i=i;
+      var num=document.createElement('span'); num.className='num'; num.textContent=(i+1);
+      var lbl=document.createElement('span'); lbl.className='lbl';
+      if(m.label){ lbl.textContent=m.label; } else { lbl.innerHTML='<span class="empty">ohne Namen</span>'; }
+      var del=document.createElement('button'); del.className='del'; del.title='Löschen'; del.setAttribute('aria-label','Punkt '+(i+1)+' löschen'); del.innerHTML='&times;';
+      del.addEventListener('click',function(e){ e.stopPropagation(); deleteMarker(i); });
+      li.appendChild(num); li.appendChild(lbl); li.appendChild(del);
+      li.addEventListener('click',function(){ select(i); });
+      mlist.appendChild(li);
+    });
+  }
+  function updateListLabel(i){
+    var li=mlist.children[i]; if(!li) return; var lbl=li.querySelector('.lbl');
+    if(state.markers[i].label){ lbl.textContent=state.markers[i].label; } else { lbl.innerHTML='<span class="empty">ohne Namen</span>'; }
+  }
+
+  function renderEditor(){
+    var has=state.sel>=0 && !!state.markers[state.sel];
+    editor.hidden=!has;
+    editSub.textContent = has ? ('Punkt '+(state.sel+1)+' von '+state.markers.length+' – Felder ausfüllen.')
+      : (state.markers.length ? 'Punkt in der Liste oder auf dem Bild wählen.' : 'Noch kein Punkt gesetzt.');
+    if(has) syncFields();
+  }
+  function syncFields(){
+    var m=state.markers[state.sel]; if(!m) return;
+    fLabel.value=m.label; fText.value=m.text; fSide.value=m.side; fPos.value=m.x+'% / '+m.y+'%';
+  }
+  fLabel.addEventListener('input',function(){ var m=state.markers[state.sel]; if(!m)return; m.label=fLabel.value; updateMarkerEl(state.sel); updateListLabel(state.sel); updateCode(); });
+  fText.addEventListener('input',function(){ var m=state.markers[state.sel]; if(!m)return; m.text=fText.value; updateMarkerEl(state.sel); updateCode(); });
+  fSide.addEventListener('change',function(){ var m=state.markers[state.sel]; if(!m)return; m.side=fSide.value; updateMarkerEl(state.sel); updateCode(); });
+
+  oWidth.addEventListener('input',function(){ state.width=oWidth.value.trim()||'470px'; updateCode(); });
+  oPath.addEventListener('input',function(){ state.path=oPath.value.trim(); updateCode(); });
+  oAlt.addEventListener('input',function(){ state.alt=oAlt.value; updateCode(); });
+  oNumbers.addEventListener('change',function(){ state.numbers=oNumbers.checked; updateCode(); });
+
+  /* ---------- Tastatur: verschieben / löschen / abwählen ---------- */
+  function typingInField(){ var a=document.activeElement; return a && /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName); }
+  window.addEventListener('keydown',function(e){
+    if(state.sel<0 || !state.markers[state.sel]) return;
+    if(typingInField()) return;
+    var m=state.markers[state.sel], step=e.shiftKey?2:0.5, moved=true;
+    switch(e.key){
+      case 'ArrowLeft':  m.x=clamp(m.x-step); break;
+      case 'ArrowRight': m.x=clamp(m.x+step); break;
+      case 'ArrowUp':    m.y=clamp(m.y-step); break;
+      case 'ArrowDown':  m.y=clamp(m.y+step); break;
+      case 'Delete': case 'Backspace': deleteMarker(state.sel); e.preventDefault(); return;
+      case 'Escape': state.sel=-1; render(); return;
+      default: moved=false;
+    }
+    if(moved){ e.preventDefault(); updateMarkerEl(state.sel); syncFields(); updateCode(); }
+  });
+
+  /* ---------- Code erzeugen ---------- */
+  function escAttr(s){ return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
+  function escText(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+  function buildCode(){
+    if(!state.img) return '<!-- Bild laden und Punkte setzen -->';
+    var w=state.width||'470px', path=state.path||'medien/bild.png';
+    var lines=['<figure class="hotspot" data-width="'+escAttr(w)+'"'+(state.numbers?' data-numbers':'')+'>'];
+    lines.push('  <img src="'+escAttr(path)+'" alt="'+escAttr(state.alt||'')+'">');
+    if(!state.markers.length) lines.push('  <!-- noch keine Punkte -->');
+    state.markers.forEach(function(m){
+      var a='data-x="'+m.x+'" data-y="'+m.y+'"';
+      if(m.side && m.side!=='auto') a+=' data-side="'+m.side+'"';
+      a+=' data-label="'+escAttr(m.label||'')+'"';
+      lines.push('  <span '+a+'>'+escText((m.text||'').replace(/\s*\n\s*/g,' ').trim())+'</span>');
+    });
+    lines.push('</figure>');
+    return lines.join('\n');
+  }
+  function updateCode(){ codeEl.textContent=buildCode(); copyBtn.disabled=!state.img; }
+
+  copyBtn.addEventListener('click',function(){
+    var txt=codeEl.textContent;
+    var done=function(){ copied.classList.add('show'); setTimeout(function(){copied.classList.remove('show')},1400); };
+    if(navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(txt).then(done,fallback); }
+    else fallback();
+    function fallback(){ var ta=document.createElement('textarea'); ta.value=txt; document.body.appendChild(ta);
+      ta.select(); try{document.execCommand('copy')}catch(e){} ta.remove(); done(); }
+  });
+
+  /* ---------- Theme ---------- */
+  $('#themeBtn').addEventListener('click',function(){
+    var cur=document.documentElement.getAttribute('data-theme');
+    var next = cur==='dark' ? 'light' : (cur==='light' ? '' : 'dark');
+    if(next) document.documentElement.setAttribute('data-theme',next);
+    else document.documentElement.removeAttribute('data-theme');
+  });
+
+  updateCode();
+})();
+</script>
+</body>
+</html>
