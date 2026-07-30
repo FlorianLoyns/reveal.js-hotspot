@@ -4,7 +4,9 @@ Annotate an image in place. Small markers sit on the picture; a tap opens name
 and explanation right next to them, the next tap closes it. No quiz, no score,
 no modes — you show a picture, you point at things, people read.
 
-![Hotspot](screenshot.png)
+[![Hotspot](screenshot.png)](https://florianloyns.github.io/reveal.js-hotspot/demo.html)
+
+**[Live demo](https://florianloyns.github.io/reveal.js-hotspot/demo.html)**
 
 Marker positions are **percentages of the image**, so the plugin never measures
 anything at runtime. That single decision is what makes it dependable: it does
